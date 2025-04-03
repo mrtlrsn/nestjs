@@ -1,17 +1,14 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { TaskStatus } from '../enums/task-status';
 
-@ObjectType()
-export class Task {
-  @Field()
-  id: string;
-
+@InputType()
+export class CreateTaskInput {
   @Field()
   title: string;
 
   @Field({ nullable: true })
   description?: string;
 
-  @Field(() => TaskStatus)
+  @Field(() => TaskStatus, { defaultValue: TaskStatus.TO_DO })
   status: TaskStatus;
 }
