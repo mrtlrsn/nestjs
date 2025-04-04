@@ -12,6 +12,6 @@ export class Task {
   @Field({ nullable: true })
   description?: string;
 
-  @Field()
+  @Field(() => TaskStatus)
   status: TaskStatus;
 }

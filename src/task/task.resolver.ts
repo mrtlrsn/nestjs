@@ -1,4 +1,4 @@
-import { Args, Mutation, Query } from '@nestjs/graphql';
+import { Args, ID, Mutation, Query } from '@nestjs/graphql';
 import { Resolver } from '@nestjs/graphql';
 import { Task } from './models/task.model';
 import { TaskService } from './task.service';
@@ -31,8 +31,8 @@ export class TaskResolver {
     return this.taskService.findAll();
   }
 
-  @Query(() => Task)
-  getTask(@Args('id', { type: () => String }) id: string): Task | undefined {
+  @Query(() => Task, { nullable: true })
+  getTask(@Args('id', { type: () => ID }) id: string): Task | undefined {
     return this.taskService.findOne(id);
   }
 
@@ -47,7 +47,7 @@ export class TaskResolver {
 
   @Mutation(() => TaskMutationResponse)
   updateTask(
-    @Args('id', { type: () => String }) id: string,
+    @Args('id', { type: () => ID }) id: string,
     @Args('updateTaskInput') updateTaskInput: UpdateTaskInput,
   ): TaskMutationResponse {
     const task = this.taskService.update(id, updateTaskInput);
@@ -56,10 +56,9 @@ export class TaskResolver {
   }
 
   @Mutation(() => TaskMutationResponse)
-  deleteTask(
-    @Args('id', { type: () => String }) id: string,
-  ): TaskMutationResponse {
+  deleteTask(@Args('id', { type: () => ID }) id: string): TaskMutationResponse {
     const task = this.taskService.findOne(id);
+
     this.taskService.remove(id);
 
     return taskMutationResponse(task, 'deleted');
