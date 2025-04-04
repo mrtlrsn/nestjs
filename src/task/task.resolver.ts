@@ -5,6 +5,7 @@ import { TaskService } from './task.service';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { TaskMutationResponse } from './dto/task-mutation-response.object';
+import { TaskStatus } from './enums/task-status';
 
 const taskMutationResponse = (
   task: Task | undefined,
@@ -27,8 +28,11 @@ export class TaskResolver {
   constructor(private taskService: TaskService) {}
 
   @Query(() => [Task])
-  getAllTasks(): Task[] {
-    return this.taskService.findAll();
+  getAllTasks(
+    @Args('filterByStatus', { type: () => TaskStatus, nullable: true })
+    status?: TaskStatus,
+  ): Task[] {
+    return this.taskService.findAll(status);
   }
 
   @Query(() => Task, { nullable: true })

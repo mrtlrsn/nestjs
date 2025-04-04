@@ -9,8 +9,13 @@ import { UpdateTaskInput } from './dto/update-task.input';
 export class TaskService {
   private tasks: Record<string, Task> = {};
 
-  findAll(): Task[] {
-    return Object.values(this.tasks);
+  findAll(filterByStatus: TaskStatus | undefined): Task[] {
+    const allTasks = Object.values(this.tasks);
+    if (filterByStatus) {
+      return allTasks.filter(({ status }) => status == filterByStatus);
+    }
+
+    return allTasks;
   }
 
   findOne(id: string): Task | undefined {
