@@ -106,10 +106,13 @@ describe('TaskResolver', () => {
       const result = resolver.createTask(createTaskInput);
 
       expect(result).toEqual({
-        id: '3',
-        title: 'New Task',
-        description: 'New Description',
-        status: TaskStatus.TO_DO,
+        status: 'created',
+        task: {
+          id: '3',
+          title: 'New Task',
+          description: 'New Description',
+          status: TaskStatus.TO_DO,
+        },
       });
     });
   });
@@ -125,19 +128,30 @@ describe('TaskResolver', () => {
       const result = resolver.updateTask('2', updateTaskInput);
 
       expect(result).toEqual({
-        id: '2',
-        title: 'Updated task',
-        description: 'Updated description',
-        status: TaskStatus.IN_PROGRESS,
+        status: 'updated',
+        task: {
+          id: '2',
+          title: 'Updated task',
+          description: 'Updated description',
+          status: TaskStatus.IN_PROGRESS,
+        },
       });
     });
   });
 
   describe('#deleteTask', () => {
     it('deletes one task', () => {
-      const result = resolver.deleteTask('2');
+      const result = resolver.deleteTask('1');
 
-      expect(result).toBe(true);
+      expect(result).toEqual({
+        status: 'deleted',
+        task: {
+          id: '1',
+          title: 'First task',
+          description: 'My first task',
+          status: TaskStatus.DONE,
+        },
+      });
     });
   });
 });
