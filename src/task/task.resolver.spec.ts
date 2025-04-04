@@ -5,6 +5,7 @@ import { TaskService } from './task.service';
 import { Task } from './models/task.model';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
+import { TaskPubSub } from './task.pubsub';
 
 const mockTaskService = {
   findAll: jest.fn(() => [
@@ -73,6 +74,7 @@ describe('TaskResolver', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TaskResolver,
+        TaskPubSub,
         {
           provide: TaskService,
           useValue: mockTaskService,
