@@ -1,5 +1,5 @@
 {
-  description = "A development environment with Node.js for Tibber case";
+  description = "A development environment with Node.js";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
