@@ -11,26 +11,29 @@ export class TaskResolver {
 
   @Query(() => [Task])
   getAllTasks(): Task[] {
-    return [];
+    return this.taskService.findAll();
   }
 
   @Query(() => Task)
-  getTask(@Args('id', { type: () => String }) id: string): Task {
-    return new Task();
+  getTask(@Args('id', { type: () => String }) id: string): Task | undefined {
+    return this.taskService.findOne(id);
   }
 
   @Mutation(() => Task)
   createTask(@Args('createTaskInput') createTaskInput: CreateTaskInput): Task {
-    return new Task();
+    return this.taskService.create(createTaskInput);
   }
 
   @Mutation(() => Task)
-  updateTask(@Args('updateTaskInput') updateTaskInput: UpdateTaskInput): Task {
-    return new Task();
+  updateTask(
+    @Args('id', { type: () => String }) id: string,
+    @Args('updateTaskInput') updateTaskInput: UpdateTaskInput,
+  ): Task {
+    return this.taskService.update(id, updateTaskInput);
   }
 
   @Mutation(() => Boolean)
   deleteTask(@Args('id', { type: () => String }) id: string): boolean {
-    return true;
+    return this.taskService.remove(id);
   }
 }

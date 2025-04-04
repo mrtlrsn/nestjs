@@ -3,9 +3,6 @@ import { TaskStatus } from '../enums/task-status';
 
 @InputType()
 export class UpdateTaskInput {
-  @Field(() => ID)
-  id: string;
-
   @Field()
   title: string;
 
