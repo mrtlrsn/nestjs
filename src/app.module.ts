@@ -10,6 +10,7 @@ import { TaskModule } from './task/task.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      installSubscriptionHandlers: true,
     }),
     TaskModule,
   ],

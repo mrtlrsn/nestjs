@@ -1,4 +1,4 @@
-import { Args, ID, Mutation, Query } from '@nestjs/graphql';
+import { Args, ID, Mutation, Query, Subscription } from '@nestjs/graphql';
 import { Resolver } from '@nestjs/graphql';
 import { Task } from './models/task.model';
 import { TaskService } from './task.service';
@@ -6,6 +6,7 @@ import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { TaskMutationResponse } from './dto/task-mutation-response.object';
 import { TaskStatus } from './enums/task-status';
+import { TaskPubSub } from './task.pubsub';
 
 const taskMutationResponse = (
   task: Task | undefined,
@@ -25,7 +26,10 @@ const taskMutationResponse = (
 
 @Resolver(() => Task)
 export class TaskResolver {
-  constructor(private taskService: TaskService) {}
+  constructor(
+    private taskService: TaskService,
+    private taskPubsub: TaskPubSub,
+  ) {}
 
   @Query(() => [Task])
   getAllTasks(
@@ -46,6 +50,7 @@ export class TaskResolver {
   ): TaskMutationResponse {
     const task = this.taskService.create(createTaskInput);
 
+    this.taskPubsub.taskUpdated(task);
     return taskMutationResponse(task, 'created');
   }
 
@@ -55,6 +60,10 @@ export class TaskResolver {
     @Args('updateTaskInput') updateTaskInput: UpdateTaskInput,
   ): TaskMutationResponse {
     const task = this.taskService.update(id, updateTaskInput);
+
+    if (task) {
+      this.taskPubsub.taskUpdated(task);
+    }
 
     return taskMutationResponse(task, 'updated');
   }
@@ -66,5 +75,10 @@ export class TaskResolver {
     this.taskService.remove(id);
 
     return taskMutationResponse(task, 'deleted');
+  }
+
+  @Subscription(() => Task)
+  taskUpdated() {
+    return this.taskPubsub.subscribeOnTaskUpdated();
   }
 }

@@ -119,3 +119,16 @@ mutation {
   }
 }
 ```
+
+### Updated task subscription
+
+```graphql
+subscription {
+  taskUpdated {
+    id
+    title
+    description
+    status
+  }
+}
+```
