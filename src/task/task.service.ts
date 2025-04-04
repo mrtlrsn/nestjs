@@ -31,8 +31,9 @@ export class TaskService {
     return task;
   }
 
-  update(id: string, updateTaskInput: UpdateTaskInput): Task {
+  update(id: string, updateTaskInput: UpdateTaskInput): Task | undefined {
     const task = this.findOne(id);
+    if (!task) return;
 
     const updatedTask = {
       ...task,
@@ -44,9 +45,10 @@ export class TaskService {
     return updatedTask as Task;
   }
 
-  remove(id: string): boolean {
+  remove(id: string): Task | undefined {
+    const task = this.findOne(id);
     delete this.tasks[id];
 
-    return true;
+    return task;
   }
 }

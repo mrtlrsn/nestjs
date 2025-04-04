@@ -21,27 +21,53 @@ const mockTaskService = {
       status: TaskStatus.TO_DO,
     },
   ]),
-  findOne: jest.fn(() => ({
-    id: '1',
-    title: 'First task',
-    description: 'My first task',
-    status: TaskStatus.DONE,
-  })),
+  findOne: jest.fn((id: string) => {
+    const tasks: Record<string, Task> = {
+      '1': {
+        id: '1',
+        title: 'First task',
+        description: 'My first task',
+        status: TaskStatus.DONE,
+      },
+      '2': {
+        id: '2',
+        title: 'Second task',
+        description: 'My second task',
+        status: TaskStatus.TO_DO,
+      },
+    };
+
+    return tasks[id];
+  }),
   create: jest.fn((createTaskInput) => ({
     id: '3',
     ...createTaskInput,
   })),
-  update: jest.fn((id, updateTaskInput) => ({
-    id,
-    title: 'Updated task',
-    description: 'Updated description',
-    status: updateTaskInput.status || TaskStatus.IN_PROGRESS,
-  })),
-  remove: jest.fn(() => true),
+  update: jest.fn((id, updateTaskInput) => {
+    if (id !== '2') return undefined;
+
+    return {
+      id,
+      title: 'Updated task',
+      description: 'Updated description',
+      status: updateTaskInput.status || TaskStatus.IN_PROGRESS,
+    };
+  }),
+  remove: jest.fn((id: string) => {
+    if (id !== '1') return undefined;
+
+    return {
+      id: '1',
+      title: 'First task',
+      description: 'My first task',
+      status: TaskStatus.DONE,
+    };
+  }),
 };
 
 describe('TaskResolver', () => {
   let resolver: TaskResolver;
+  let taskService: TaskService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -54,8 +80,11 @@ describe('TaskResolver', () => {
       ],
     }).compile();
 
+    taskService = module.get<TaskService>(TaskService);
     resolver = module.get<TaskResolver>(TaskResolver);
   });
+
+  afterEach(() => jest.restoreAllMocks());
 
   it('should be defined', () => {
     expect(resolver).toBeDefined();
@@ -118,13 +147,13 @@ describe('TaskResolver', () => {
   });
 
   describe('#updateTask', () => {
-    it('updates one task', () => {
-      const updateTaskInput: UpdateTaskInput = {
-        title: 'Updated task',
-        description: 'Updated description',
-        status: TaskStatus.IN_PROGRESS,
-      };
+    const updateTaskInput: UpdateTaskInput = {
+      title: 'Updated task',
+      description: 'Updated description',
+      status: TaskStatus.IN_PROGRESS,
+    };
 
+    it('updates one task', () => {
       const result = resolver.updateTask('2', updateTaskInput);
 
       expect(result).toEqual({
@@ -135,6 +164,14 @@ describe('TaskResolver', () => {
           description: 'Updated description',
           status: TaskStatus.IN_PROGRESS,
         },
+      });
+    });
+
+    it('returns taks not found', () => {
+      const result = resolver.updateTask('3', updateTaskInput);
+
+      expect(result).toEqual({
+        status: 'task not found',
       });
     });
   });
@@ -151,6 +188,14 @@ describe('TaskResolver', () => {
           description: 'My first task',
           status: TaskStatus.DONE,
         },
+      });
+    });
+
+    it('returns taks not found', () => {
+      const result = resolver.deleteTask('3');
+
+      expect(result).toEqual({
+        status: 'task not found',
       });
     });
   });

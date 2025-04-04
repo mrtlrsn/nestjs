@@ -6,7 +6,10 @@ import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { TaskMutationResponse } from './dto/task-mutation-response.object';
 
-const taksMutationResponse = (task: Task | undefined, returnStatus: string) => {
+const taskMutationResponse = (
+  task: Task | undefined,
+  returnStatus: string,
+): TaskMutationResponse => {
   if (task) {
     return {
       status: returnStatus,
@@ -39,7 +42,7 @@ export class TaskResolver {
   ): TaskMutationResponse {
     const task = this.taskService.create(createTaskInput);
 
-    return taksMutationResponse(task, 'created');
+    return taskMutationResponse(task, 'created');
   }
 
   @Mutation(() => TaskMutationResponse)
@@ -49,7 +52,7 @@ export class TaskResolver {
   ): TaskMutationResponse {
     const task = this.taskService.update(id, updateTaskInput);
 
-    return taksMutationResponse(task, 'updated');
+    return taskMutationResponse(task, 'updated');
   }
 
   @Mutation(() => TaskMutationResponse)
@@ -59,6 +62,6 @@ export class TaskResolver {
     const task = this.taskService.findOne(id);
     this.taskService.remove(id);
 
-    return taksMutationResponse(task, 'deleted');
+    return taskMutationResponse(task, 'deleted');
   }
 }
